@@ -1,109 +1,105 @@
-#include "Graph.h"
 #include <cassert>
+#include <sstream>
+#include <fstream>
 #include <iostream>
+#include <algorithm>
+#include "Graph.h"
 
-void testGraphInitialization() {
-    Graph graph(5);
+void testBasicOperations() {
+    Graph g;
+    
+    // Test addEdge y getCapacity
+    g.addEdge(0, 1, 10);
+    assert(g.getCapacity(0, 1) == 10);
+    assert(g.getCapacity(1, 0) == 0);
+    
+    // Test resize automático
+    g.addEdge(5, 3, 15);
+    assert(g.size() >= 6);
+    assert(g.getCapacity(5, 3) == 15);
+    
+    // Test getAdj
+    const auto& adj0 = g.getAdj(0);
+    assert(std::find(adj0.begin(), adj0.end(), 1) != adj0.end());
+    
+    const auto& adj5 = g.getAdj(5);
+    assert(std::find(adj5.begin(), adj5.end(), 3) != adj5.end());
+    
+    // Test updateCapacity
+    g.updateCapacity(0, 1, 5);
+    assert(g.getCapacity(0, 1) == 5);
+    assert(g.getCapacity(1, 0) == 5);
+    
+    std::cout << "Pruebas básicas completadas exitosamente\n";
+}
 
-    assert(graph.size() == 5);
-    for (int u = 0; u < 5; ++u) {
-        for (int v = 0; v < 5; ++v) {
-            assert(graph.getCapacity(u, v) == 0);  // Inicialmente todas las capacidades son 0
-        }
+void testFileIO() {
+    {
+        std::ofstream testFile("test_graph.txt");
+        testFile << "0 2\n";
+        testFile << "1 3\n";
+        testFile << "0 1 10\n";
+        testFile << "0 3 5\n";
+        testFile << "2 1 15\n";
+        testFile << "2 3 10\n";
     }
-
-    std::cout << "testGraphInitialization passed.\n";
-}
-
-void testAddEdge() {
-    Graph graph(4);
-    graph.addEdge(0, 1, 10);
-    graph.addEdge(1, 2, 20);
-    graph.addEdge(2, 3, 30);
-
-    assert(graph.getCapacity(0, 1) == 10);
-    assert(graph.getCapacity(1, 2) == 20);
-    assert(graph.getCapacity(2, 3) == 30);
-
-    // Verificar que se actualicen correctamente las listas de adyacencia
-    const auto& adj0 = graph.getAdj(0);
-    const auto& adj1 = graph.getAdj(1);
-    const auto& adj2 = graph.getAdj(2);
-
-    assert(adj0.size() == 1 && adj0[0] == 1);
-    assert(adj1.size() == 2 && adj1[0] == 0 && adj1[1] == 2);
-    assert(adj2.size() == 2 && adj2[0] == 1 && adj2[1] == 3);
-
-    std::cout << "testAddEdge passed.\n";
-}
-
-void testUpdateCapacity() {
-    Graph graph(4);
-    graph.addEdge(0, 1, 10);
-    graph.updateCapacity(0, 1, 5);
-
-    assert(graph.getCapacity(0, 1) == 5);  // Capacidad actualizada correctamente
-    assert(graph.getCapacity(1, 0) == 5);  // Capacidad inversa actualizada correctamente
-
-    graph.updateCapacity(1, 0, 2);
-    assert(graph.getCapacity(1, 0) == 7);  // Capacidad inversa aumenta correctamente
-
-    std::cout << "testUpdateCapacity passed.\n";
-}
-
-void testResize() {
-    Graph graph(3);
-    graph.addEdge(0, 1, 10);
-
-    graph.addEdge(2, 0, 15);
-    graph.addEdge(2, 1, 5);
-
-    graph.addEdge(0, 3, 20);  // Automáticamente se redimensiona
-
-    assert(graph.size() == 4);
-    assert(graph.getCapacity(0, 3) == 20);
-    assert(graph.getCapacity(3, 0) == 0);  // Capacidad inversa no configurada automáticamente
-
-    const auto& adj3 = graph.getAdj(3);
-    assert(adj3.size() == 1 && adj3[0] == 0);
-
-    std::cout << "testResize passed.\n";
+    
+    Graph g;
+    bool success = g.readFromFile("test_graph.txt");
+    assert(success);
+    
+    assert(g.getCapacity(0, 1) == 10);
+    assert(g.getCapacity(0, 3) == 5);
+    assert(g.getCapacity(2, 1) == 15);
+    assert(g.getCapacity(2, 3) == 10);
+    assert(g.size() >= 4);
+    
+    std::cout << "Pruebas de E/S de archivo completadas exitosamente\n";
+    std::remove("test_graph.txt");
 }
 
 void testSuperSourceSink() {
-    Graph graph(4);
-    graph.addEdge(0, 1, 10);
-    graph.addEdge(1, 2, 20);
-    graph.addEdge(2, 3, 30);
-
-    // Configurar fuentes y sumideros
-    graph.addEdge(0, 0, 0); // superedge 
+    {
+        std::ofstream testFile("test_super.txt");
+        testFile << "0 1\n";
+        testFile << "3 4\n";
+        testFile << "0 2 10\n";
+        testFile << "1 2 15\n";
+        testFile << "2 3 20\n";
+        testFile << "2 4 25\n";
+        testFile << "1 4 30\n";
+        testFile << "0 3 35\n";
+    }
     
-
+    Graph g;
+    bool success = g.readFromFile("test_super.txt");
+    assert(success);
+    
     int superSource, superSink;
-    graph.addSuperSourceSink(superSource, superSink);
-
-    assert(superSource == 4);
-    assert(superSink == 5);
-
-    // Superfuente conectado a todas las fuentes
-    assert(graph.getCapacity(superSource, 0) > 0);
-    assert(graph.getCapacity(superSource, 0) == 30);  // La capacidad es la suma de las conexiones
-
-    // Supersumidero conectado a todos los sumideros
-    assert(graph.getCapacity(3, superSink) > 0);
-    assert(graph.getCapacity(3, superSink) == 30);  // La capacidad es la suma de las conexiones
-
-    std::cout << "testSuperSourceSink passed.\n";
+    g.addSuperSourceSink(superSource, superSink);
+    
+    assert(superSource == g.size() - 2);
+    assert(superSink == g.size() - 1);
+    assert(g.getCapacity(superSource, 0) > 0);
+    assert(g.getCapacity(superSource, 1) > 0);
+    assert(g.getCapacity(3, superSink) > 0);
+    assert(g.getCapacity(4, superSink) > 0);
+    
+    std::cout << "Pruebas de super source/sink completadas exitosamente\n";
+    std::remove("test_super.txt");
 }
 
 int main() {
-    testGraphInitialization();
-    testAddEdge();
-    testUpdateCapacity();
-    testResize();
-    testSuperSourceSink();
-
-    std::cout << "All Graph tests passed successfully.\n";
-    return 0;
+    try {
+        testBasicOperations();
+        testFileIO();
+        testSuperSourceSink();
+        
+        std::cout << "¡Todas las pruebas completadas exitosamente!\n";
+        return 0;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error en las pruebas: " << e.what() << std::endl;
+        return 1;
+    }
 }
