@@ -56,7 +56,7 @@ int MaxFlow::dfs(int u, int flow) {
     }
 
     // Explorar aristas adyacentes
-    for (; state.getPointer(u) < graph.getAdj(u).size(); state.incrementPointer(u)) {
+    for (; static_cast<std::size_t>(state.getPointer(u)) < graph.getAdj(u).size(); state.incrementPointer(u)) {
         int v = graph.getAdj(u)[state.getPointer(u)];
         int availableCapacity = graph.getCapacity(u, v);
 
@@ -65,14 +65,12 @@ int MaxFlow::dfs(int u, int flow) {
             int pushed = dfs(v, std::min(flow, availableCapacity));
             if (pushed > 0) {
                 graph.updateCapacity(u, v, pushed);  // Reducir capacidad y aumentar capacidad residual
-        return pushed;
-    }
-}
-
+                return pushed;
+            }
+        }
     }
     return 0;  // No se encontró un flujo válido
 }
-
 
 void MaxFlow::calculateFlows() {
     sourceFlows.clear();
