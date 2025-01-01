@@ -4,6 +4,13 @@
 #include <algorithm>
 #include <iostream>  // Para debugging
 
+/*
+Entrada: int u: nodo de origen
+         int v: nodo de destino
+         int cap: capacidad de la arista
+Salida: void
+Descripción: Agrega una arista con capacidad cap entre los nodos u y v.
+*/
 void Graph::addEdge(int u, int v, int cap) {
     // Asegurarse de que el grafo tenga el tamaño adecuado
     int maxNode = std::max(u, v);
@@ -22,6 +29,12 @@ void Graph::addEdge(int u, int v, int cap) {
     }
 }
 
+/*
+Entrada: int u: nodo de origen
+         int v: nodo de destino
+Salida: int: capacidad de la arista entre los nodos u y v
+Descripción: Devuelve la capacidad de la arista entre los nodos u y v.
+*/
 int Graph::getCapacity(int u, int v) const {
     if (u < vertices && v < vertices) {
         return capacity[u][v];
@@ -33,6 +46,13 @@ const vector<int>& Graph::getAdj(int u) const {
     return adj[u];
 }
 
+/*
+Entrada: int u: nodo de origen
+         int v: nodo de destino
+         int flow: flujo a agregar a la arista
+Salida: void
+Descripción: Actualiza la capacidad de la arista entre los nodos u y v, reduciendo la capacidad y aumentando la capacidad residual.
+*/
 void Graph::updateCapacity(int u, int v, int flow) {
     if (u < vertices && v < vertices) {
         capacity[u][v] -= flow;
@@ -40,10 +60,24 @@ void Graph::updateCapacity(int u, int v, int flow) {
     }
 }
 
+/*
+Entrada: none
+Salida: int: cantidad de nodos en el grafo
+Descripción: Devuelve la cantidad de nodos en el grafo.
+*/
 int Graph::size() const {
     return vertices;
 }
 
+/*
+Entrada: const std::string& filename: nombre del archivo a leer
+Salida: bool: true si se pudo leer el archivo, false en caso contrario
+Descripción: Lee un grafo desde un archivo con el siguiente formato:
+             - La primera línea contiene los nodos fuente separados por espacios
+             - La segunda línea contiene los nodos sumidero separados por espacios
+             - Las siguientes líneas contienen las aristas en el formato u v cap
+               donde u y v son los nodos de origen y destino, respectivamente, y cap es la capacidad de la arista.
+*/
 bool Graph::readFromFile(const std::string& filename) {
     std::ifstream file(filename);
     if (!file) {
@@ -114,6 +148,12 @@ bool Graph::readFromFile(const std::string& filename) {
     return true;
 }
 
+/*
+Entrada: int& superSource: nodo de superfuente
+         int& superSink: nodo de supersumidero
+Salida: void
+Descripción: Agrega una superfuente y un supersumidero al grafo, conectando cada fuente original con la superfuente y cada sumidero original con el supersumidero.
+*/
 void Graph::addSuperSourceSink(int& superSource, int& superSink) {
     superSource = vertices;
     superSink = vertices + 1;

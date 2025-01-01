@@ -4,14 +4,17 @@
 #include <vector>
 #include <string>
 using namespace std;
+// Clase para representar un grafo con capacidades en las aristas y nodos fuente y sumidero 
+
 
 class Graph {
+// Atributos
 private:
-    int vertices;
-    vector<vector<int>> capacity;
-    vector<vector<int>> adj;
-    vector<int> sources;
-    vector<int> sinks;
+    int vertices; // Número de nodos
+    vector<vector<int>> capacity; // Capacidad de las aristas
+    vector<vector<int>> adj; // Lista de adyacencia
+    vector<int> sources; // Nodos fuente
+    vector<int> sinks; // Nodos sumidero
 
 public:
     // Constructor modificado para inicializar correctamente
