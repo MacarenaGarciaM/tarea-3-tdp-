@@ -12,11 +12,17 @@ Salida: void
 Descripción: Agrega una arista con capacidad cap entre los nodos u y v.
 */
 void Graph::addEdge(int u, int v, int cap) {
-    // Asegurarse de que el grafo tenga el tamaño adecuado
+    // Verificar índices negativos
+    if (u < 0 || v < 0) return;
+    
+    // Redimensionar si es necesario
     int maxNode = std::max(u, v);
     if (maxNode >= vertices) {
         resize(maxNode + 1);
     }
+    
+    // Verificar que los índices estén dentro de los límites después del resize
+    if (u >= vertices || v >= vertices) return;
     
     capacity[u][v] += cap;
     
