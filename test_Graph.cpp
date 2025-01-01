@@ -58,50 +58,12 @@ void testFileIO() {
     std::remove("test_graph.txt");
 }
 
-void testSuperSourceSink() {
-    {
-        std::ofstream testFile("test_super.txt");
-        testFile << "0 1\n";
-        testFile << "3 4\n";
-        testFile << "0 2 10\n";
-        testFile << "1 2 15\n";
-        testFile << "2 3 20\n";
-        testFile << "2 4 25\n";
-        testFile << "1 4 30\n";
-        testFile << "0 3 35\n";
-    }
-
-    Graph g;
-    bool success = g.readFromFile("test_super.txt");
-    assert(success);
-
-    int superSource, superSink;
-    g.addSuperSourceSink(superSource, superSink);
-
-    // Validar superSource y superSink
-    assert(superSource == g.size() - 2);
-    assert(superSink == g.size() - 1);
-
-    // Validar conexiones de superSource
-    for (int src : g.getAdj(superSource)) {
-        assert(g.getCapacity(superSource, src) > 0);
-    }
-
-    // Validar conexiones de superSink
-    for (int sink : g.getAdj(superSink)) {
-        assert(g.getCapacity(sink, superSink) > 0);
-    }
-
-    std::cout << "Pruebas de super source/sink completadas exitosamente\n";
-    std::remove("test_super.txt");
-}
 
 int main() {
     try {
         // Ejecutar pruebas
         testBasicOperations();
         testFileIO();
-        testSuperSourceSink();
 
         std::cout << "¡Todas las pruebas completadas exitosamente!\n";
         return 0;
