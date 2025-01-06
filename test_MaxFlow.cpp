@@ -32,21 +32,21 @@ public:
     }
 
     void testMultiplePaths() {
-        std::cout << "Ejecutando testMultiplePaths...\n";
-        Graph graph(4);
+    std::cout << "Ejecutando testMultiplePaths...\n";
+    Graph graph(4);
 
-        graph.addEdge(0, 1, 10);
-        graph.addEdge(0, 2, 10);
-        graph.addEdge(1, 3, 5);
-        graph.addEdge(2, 3, 15);
+    graph.addEdge(0, 1, 10);
+    graph.addEdge(0, 2, 10);
+    graph.addEdge(1, 3, 5);
+    graph.addEdge(2, 3, 15);
 
-        Graph residualGraph = graph;
-        MaxFlow maxFlow(graph, residualGraph, 0, 3);
+    Graph residualGraph = graph;
+    MaxFlow maxFlow(graph, residualGraph, 0, 3);
 
-        int flow = maxFlow.calculate();
-        assertEqual(flow, 20, "El flujo máximo con múltiples caminos falló.");
-        std::cout << "  testMultiplePaths pasado.\n";
-    }
+    int flow = maxFlow.calculate();
+    assertEqual(flow, 15, "El flujo máximo con múltiples caminos falló.");  // Cambiado de 20 a 15
+    std::cout << "  testMultiplePaths pasado.\n";
+}
 
     void testDisconnectedGraph() {
         std::cout << "Ejecutando testDisconnectedGraph...\n";
